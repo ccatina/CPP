@@ -1,16 +1,20 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 int countstrings()
 {
 	std::ifstream in("unsorted.txt");
 	int i = 0;
+	std::string temp;
+
 	if (in.is_open())
 	{
-		while (!in.eof())
+		while (getline(in,temp))
 			i++;
 	}
+	in.close();
 	return (i);
 }
 
@@ -27,8 +31,19 @@ bool checksort(std::string str)
 			return (true);
 		}
 	}
+	std::cout << "Check is good boy!\n";
 	out.close();
 	return (false);
+}
+
+bool checkstring(std::string &str)
+{
+	std::istringstream i(str);
+	double x;
+
+	if (!(i >> x))
+		return false;
+	return true;
 }
 
 void sort()
@@ -36,31 +51,34 @@ void sort()
 	std::string str1;
 	std::string str2;	
 	
-	std::ifstream in("unsorted.txt");
-	
-	if (in.is_open())
+	std::cout << "working step 1\n";
+	for (int k = 0; k < countstrings(); k++)	
 	{
-		for (int k = 0; k < countstrings(); k++)
-		{
-			int n = 1;
-			getline(in, str1);
-			while (getline(in, str2))
-			{	
+		std::cout << "Loop's done!\n";
+		std::ifstream in("unsorted");
+		int n = 1;
+		
+		while (getline(in, str1) && checkstring(str1) == false);
+		while (getline(in, str2))
+		{	if (checkstring(str2) == true)
+			{
 				if (str1.compare(str2) == 1 && checksort(str2) == false)
 					str1 = str2;
 				else if (str1.compare(str2) == 0)
 					n++;
 			}
-			std::ofstream out("sorted.txt", std::ios::app);	
-			for (int l = 0; l < n; l++)
-				out << str1 << "\n";
-			out.close();
-			in.seekg(0, std::ios::beg);
 		}
-	}
-	in.close();
+		std::ofstream out("sorted.txt", std::ios::app);	
+		for (int l = 0; l < n; l++)
+			out << str1 << "\n";
+		std::cout << str1 << "\n";
+		out.close();
+		in.close();
+		}
 }
 
 int main()
 {
+	sort();
+	return (0);
 }
